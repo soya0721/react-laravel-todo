@@ -126,6 +126,11 @@ function App() {
                     }>
                       {task.title}
                     </span>
+                    {task.completed && (
+                      <span  className="ml-2 text-green-500 text-sm">
+                        🌟よくできました！
+                      </span>
+                    )}
                   </div>
                   <div className="flex gap-2 ml-4">
                     <button

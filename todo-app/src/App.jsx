@@ -5,6 +5,7 @@ function App() {
   const [inputText, setInputText] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
   const [editText, setEditText] = useState('');
+  const [showIncompleteOnly, setShowIncompleteOnly] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost:8000/api/tasks')
@@ -78,7 +79,7 @@ function App() {
       <div className="max-w-xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">📋 ToDoアプリ</h1>
 
-        <div className="flex items-center mb-6 gap-2">
+        <div className="flex items-center mb-4 gap-2">
           <input
             type="text"
             value={inputText}
@@ -94,65 +95,81 @@ function App() {
           </button>
         </div>
 
+        <div className="text-right mb-4">
+          <button
+            className="text-sm text-blue-600 underline"
+            onClick={() => setShowIncompleteOnly(!showIncompleteOnly)}
+          >
+            {showIncompleteOnly ? 'すべて表示' : '未完了だけ表示'}
+          </button>
+        </div>
+
         <ul className="space-y-4">
-          {tasks.map((task, index) => (
-            <li key={task.id} className="bg-white shadow p-4 rounded-md flex justify-between items-center">
-              {editingIndex === index ? (
-                <div className="flex-1 flex gap-2 items-center">
-                  <input
-                    type="text"
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    className="flex-1 border border-gray-300 px-3 py-2 rounded focus:outline-none"
-                  />
-                  <button
-                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-                    onClick={() => handleUpdateTask(task, index)}
-                  >
-                    保存
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center flex-1 gap-2">
+          {tasks
+            .filter((task) => !showIncompleteOnly || !task.completed)
+            .map((task, index) => (
+              <li
+                key={task.id}
+                className="bg-white shadow p-4 rounded-md flex justify-between items-center"
+              >
+                {editingIndex === index ? (
+                  <div className="flex-1 flex gap-2 items-center">
                     <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => handleToggleComplete(task, index)}
-                      className="accent-blue-500 w-5 h-5"
+                      type="text"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      className="flex-1 border border-gray-300 px-3 py-2 rounded focus:outline-none"
                     />
-                    <span className={
-                      `text-lg ${task.completed ? 'line-through text-gray-400' : ''}`
-                    }>
-                      {task.title}
-                    </span>
-                    {task.completed && (
-                      <span  className="ml-2 text-green-500 text-sm">
-                        🌟よくできました！
+                    <button
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                      onClick={() => handleUpdateTask(task, index)}
+                    >
+                      保存
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center flex-1 gap-2">
+                      <input
+                        type="checkbox"
+                        checked={task.completed}
+                        onChange={() => handleToggleComplete(task, index)}
+                        className="accent-blue-500 w-5 h-5"
+                      />
+                      <span
+                        className={`text-lg ${
+                          task.completed ? 'line-through text-gray-400' : ''
+                        }`}
+                      >
+                        {task.title}
                       </span>
-                    )}
-                  </div>
-                  <div className="flex gap-2 ml-4">
-                    <button
-                      className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
-                      onClick={() => {
-                        setEditingIndex(index);
-                        setEditText(task.title);
-                      }}
-                    >
-                      編集
-                    </button>
-                    <button
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                      onClick={() => handleDeleteTask(task.id, index)}
-                    >
-                      削除
-                    </button>
-                  </div>
-                </>
-              )}
-            </li>
-          ))}
+                      {task.completed && (
+                        <span className="ml-2 text-green-500 text-sm">
+                          🌟よくできました！
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex gap-2 ml-4">
+                      <button
+                        className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
+                        onClick={() => {
+                          setEditingIndex(index);
+                          setEditText(task.title);
+                        }}
+                      >
+                        編集
+                      </button>
+                      <button
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                        onClick={() => handleDeleteTask(task.id, index)}
+                      >
+                        削除
+                      </button>
+                    </div>
+                  </>
+                )}
+              </li>
+            ))}
         </ul>
       </div>
     </div>

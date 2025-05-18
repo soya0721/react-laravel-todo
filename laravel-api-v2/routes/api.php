@@ -40,7 +40,7 @@ Route::put('/tasks/{id}', function ($id, Request $request) {
 
 Route::delete('/tasks/{id}', function($id) {
     $task = Task::findOrFail($id);
-    $task->delete;
+    $task->delete();
 
     return response()->json(['message' => '削除しました']);
 });

@@ -11,11 +11,13 @@ Route::get('/tasks', function () {
 
 Route::post('/tasks', function (Request $request) {
     $validated = $request->validate([
-        'title' => 'required|string|max:225'
+        'title' => 'required|string|max:225',
+        'body' => 'nullable|string', 
     ]);
 
     $task = Task::create([
         'title' => $validated['title'],
+        'body'=> $validated['body'] ?? '',
         'completed' => false,
     ]);
 

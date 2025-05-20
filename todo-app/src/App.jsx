@@ -1,41 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import TaskItem from "./components/TaskItem";
+import AddButton from "./components/AddButton"
 
 function App() {
   const [tasks, setTasks] = useState([]);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
-  const [editText, setEditText] = useState('');
+  const [editText, setEditText] = useState("");
   const [showIncompleteOnly, setShowIncompleteOnly] = useState(false);
+  const [inputBody, setInputBody] = useState("");
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/tasks')
+    fetch("http://localhost:8000/api/tasks")
       .then((res) => res.json())
-      .then((data) => setTasks(data))
-      .catch((error) => console.error('API取得失敗:', error));
+      .then((data) => {
+        console.log("APIから取得したtasks", data);
+        setTasks(data);
+      })
+      .catch((error) => console.error("API取得失敗:", error));
   }, []);
 
   const handleAddTask = () => {
-    if (inputText.trim() === '') return;
-
-    fetch('http://localhost:8000/api/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: inputText }),
+    if (inputText.trim() === "") return;
+    console.log("送信内容:", { title: inputText, body: inputBody });
+    fetch("http://localhost:8000/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: inputText, body: inputBody }),
     })
       .then((res) => res.json())
       .then((data) => {
         setTasks([...tasks, data]);
-        setInputText('');
+        setInputText("");
+        setInputBody("");
       })
-      .catch((err) => console.error('タスク追加失敗:', err));
+      .catch((err) => console.error("タスク追加失敗:", err));
   };
 
   const handleUpdateTask = (task, index) => {
-    if (editText.trim() === '') return;
+    if (editText.trim() === "") return;
 
     fetch(`http://localhost:8000/api/tasks/${task.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: editText, completed: task.completed }),
     })
       .then((res) => res.json())
@@ -44,14 +51,14 @@ function App() {
         newTasks[index].title = updatedTask.title;
         setTasks(newTasks);
         setEditingIndex(null);
-        setEditText('');
+        setEditText("");
       });
   };
 
   const handleToggleComplete = (task, index) => {
     fetch(`http://localhost:8000/api/tasks/${task.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: task.title, completed: !task.completed }),
     })
       .then((res) => res.json())
@@ -60,18 +67,18 @@ function App() {
         newTasks[index] = updatedTask;
         setTasks(newTasks);
       })
-      .catch((err) => console.error('完了状態の更新失敗:', err));
+      .catch((err) => console.error("完了状態の更新失敗:", err));
   };
 
   const handleDeleteTask = (taskId, index) => {
-    fetch(`http://localhost:8000/api/tasks/${taskId}`, { method: 'DELETE' })
+    fetch(`http://localhost:8000/api/tasks/${taskId}`, { method: "DELETE" })
       .then((res) => {
-        if (!res.ok) throw new Error('削除失敗');
+        if (!res.ok) throw new Error("削除失敗");
         const newTasks = [...tasks];
         newTasks.splice(index, 1);
         setTasks(newTasks);
       })
-      .catch((err) => console.error('削除エラー:', err));
+      .catch((err) => console.error("削除エラー:", err));
   };
 
   return (
@@ -87,27 +94,30 @@ function App() {
             placeholder="タスクを入力"
             className="flex-1 border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded-md transition"
-            onClick={handleAddTask}
-          >
-            追加
-          </button>
+          <textarea
+            value={inputBody}
+            onChange={(e) => setInputBody(e.target.value)}
+            placeholder="メモを入力（任意）"
+            className="w-full mt-2 border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <AddButton onClick={handleAddTask}/>
         </div>
 
         <div className="text-right mb-4">
           <button
             onClick={() => setShowIncompleteOnly(!showIncompleteOnly)}
-          className={`px-4 py-2 rounded-full font-semibold text-sm transition-all shadow
-          ${showIncompleteOnly
-          ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
+            className={`px-4 py-2 rounded-full font-semibold text-sm transition-all shadow
+          ${
+            showIncompleteOnly
+              ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }
           `}
-        >
-  {showIncompleteOnly ? '🌱 すべて表示' : '✅ 未完了だけ'}
-</button>
+          >
+            {showIncompleteOnly ? "🌱 すべて表示" : "✅ 未完了だけ"}
+          </button>
         </div>
-
+          
         <ul className="space-y-4">
           {tasks
             .filter((task) => !showIncompleteOnly || !task.completed)
@@ -140,13 +150,21 @@ function App() {
                         onChange={() => handleToggleComplete(task, index)}
                         className="accent-blue-500 w-5 h-5"
                       />
-                      <span
-                        className={`text-lg ${
-                          task.completed ? 'line-through text-gray-400' : ''
-                        }`}
-                      >
-                        {task.title}
-                      </span>
+                      <div className="flex flex-col">
+                        <span
+                          className={`text-lg ${
+                            task.completed ? "line-through text-gray-400" : ""
+                          }`}
+                        >
+                          {task.title}
+                        </span>
+                        {task.body && (
+                          <span className="text-sm text-gray-500 mt-1 block">
+                            {task.body}
+                          </span>
+                        )}
+                      </div>
+
                       {task.completed && (
                         <span className="ml-2 text-green-500 text-sm">
                           🌟よくできました！

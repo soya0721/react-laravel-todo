@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import TaskItem from "./components/TaskItem";
 import AddButton from "./components/AddButton"
+import TaskInput from "./components/TaskInput";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -86,22 +87,13 @@ function App() {
       <div className="max-w-xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">📋 ToDoアプリ</h1>
 
-        <div className="flex items-center mb-4 gap-2">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="タスクを入力"
-            className="flex-1 border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <textarea
-            value={inputBody}
-            onChange={(e) => setInputBody(e.target.value)}
-            placeholder="メモを入力（任意）"
-            className="w-full mt-2 border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <AddButton onClick={handleAddTask}/>
-        </div>
+        <TaskInput 
+          inputText={inputText}
+          setInputText={setInputText}
+          inputBody={inputBody}
+          setInputBody={setInputBody}
+          onClick={ handleAddTask }
+        />
 
         <div className="text-right mb-4">
           <button

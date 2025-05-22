@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import TaskItem from "./components/TaskItem";
-import AddButton from "./components/AddButton"
+// import TaskItem from "./components/TaskItem";
 import TaskInput from "./components/TaskInput";
+import ToggleFilterButton from "./components/ToggleFilterButton";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -95,20 +95,10 @@ function App() {
           onClick={ handleAddTask }
         />
 
-        <div className="text-right mb-4">
-          <button
-            onClick={() => setShowIncompleteOnly(!showIncompleteOnly)}
-            className={`px-4 py-2 rounded-full font-semibold text-sm transition-all shadow
-          ${
-            showIncompleteOnly
-              ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }
-          `}
-          >
-            {showIncompleteOnly ? "🌱 すべて表示" : "✅ 未完了だけ"}
-          </button>
-        </div>
+        <ToggleFilterButton
+          showIncompleteOnly={showIncompleteOnly}
+          toggleShowIncompleteOnly={() => setShowIncompleteOnly(!showIncompleteOnly)}
+        />
           
         <ul className="space-y-4">
           {tasks

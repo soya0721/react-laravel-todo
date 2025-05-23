@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 // import TaskItem from "./components/TaskItem";
 import TaskInput from "./components/TaskInput";
 import ToggleFilterButton from "./components/ToggleFilterButton";
+import TaskItem from "./components/TaskItem";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -87,92 +88,37 @@ function App() {
       <div className="max-w-xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">📋 ToDoアプリ</h1>
 
-        <TaskInput 
+        <TaskInput
           inputText={inputText}
           setInputText={setInputText}
           inputBody={inputBody}
           setInputBody={setInputBody}
-          onClick={ handleAddTask }
+          onClick={handleAddTask}
         />
 
         <ToggleFilterButton
           showIncompleteOnly={showIncompleteOnly}
-          toggleShowIncompleteOnly={() => setShowIncompleteOnly(!showIncompleteOnly)}
+          toggleShowIncompleteOnly={() =>
+            setShowIncompleteOnly(!showIncompleteOnly)
+          }
         />
-          
+
         <ul className="space-y-4">
           {tasks
             .filter((task) => !showIncompleteOnly || !task.completed)
             .map((task, index) => (
-              <li
+              <TaskItem
                 key={task.id}
-                className="bg-white shadow p-4 rounded-md flex justify-between items-center"
-              >
-                {editingIndex === index ? (
-                  <div className="flex-1 flex gap-2 items-center">
-                    <input
-                      type="text"
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      className="flex-1 border border-gray-300 px-3 py-2 rounded focus:outline-none"
-                    />
-                    <button
-                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-                      onClick={() => handleUpdateTask(task, index)}
-                    >
-                      保存
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex items-center flex-1 gap-2">
-                      <input
-                        type="checkbox"
-                        checked={task.completed}
-                        onChange={() => handleToggleComplete(task, index)}
-                        className="accent-blue-500 w-5 h-5"
-                      />
-                      <div className="flex flex-col">
-                        <span
-                          className={`text-lg ${
-                            task.completed ? "line-through text-gray-400" : ""
-                          }`}
-                        >
-                          {task.title}
-                        </span>
-                        {task.body && (
-                          <span className="text-sm text-gray-500 mt-1 block">
-                            {task.body}
-                          </span>
-                        )}
-                      </div>
-
-                      {task.completed && (
-                        <span className="ml-2 text-green-500 text-sm">
-                          🌟よくできました！
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex gap-2 ml-4">
-                      <button
-                        className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
-                        onClick={() => {
-                          setEditingIndex(index);
-                          setEditText(task.title);
-                        }}
-                      >
-                        編集
-                      </button>
-                      <button
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                        onClick={() => handleDeleteTask(task.id, index)}
-                      >
-                        削除
-                      </button>
-                    </div>
-                  </>
-                )}
-              </li>
+                task={task}
+                index={index}
+                editingIndex={editingIndex}
+                editText={editText}
+                setEditText={setEditText}
+                setEditingIndex={setEditingIndex}
+                handleUpdateTask={handleUpdateTask}
+                handleToggleComplete={handleToggleComplete}
+                handleDeleteTask={handleDeleteTask}
+              />
             ))}
         </ul>
       </div>

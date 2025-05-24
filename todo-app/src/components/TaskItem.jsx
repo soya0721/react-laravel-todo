@@ -10,18 +10,26 @@ const TaskItem = ({
   handleUpdateTask,
   handleToggleComplete,
   handleDeleteTask,
+  editBody,
+  setEditBody
 }) => {
   return (
     <li
       className="bg-white shadow p-4 rounded-md flex justify-between items-center"
     >
       {editingIndex === index ? (
-        <div className="flex-1 flex gap-2 items-center">
+        <div className="flex-1 flex flex-col gap-2">
           <input
             type="text"
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             className="flex-1 border border-gray-300 px-3 py-2 rounded focus:outline-none"
+          />
+          <textarea
+          value={editBody}
+          onChange={(e) => setEditBody(e.target.value)}
+          className="flex-1 border border-gray-300 px-3 py-2 rounded focus:outline-none resize-none"
+  placeholder="詳細を書く"
           />
           <button
             className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
@@ -66,6 +74,7 @@ const TaskItem = ({
               onClick={() => {
                 setEditingIndex(index);
                 setEditText(task.title);
+                setEditBody(task.body || "");
               }}
             >
               編集

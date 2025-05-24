@@ -9,6 +9,7 @@ function App() {
   const [inputText, setInputText] = useState("");
   const [editingIndex, setEditingIndex] = useState(null);
   const [editText, setEditText] = useState("");
+  const [editBody, setEditBody]  = useState("");
   const [showIncompleteOnly, setShowIncompleteOnly] = useState(false);
   const [inputBody, setInputBody] = useState("");
 
@@ -45,12 +46,16 @@ function App() {
     fetch(`http://localhost:8000/api/tasks/${task.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: editText, completed: task.completed }),
+      body: JSON.stringify({
+        title: editText,
+        body: editBody,
+        completed: task.completed
+      }),
     })
       .then((res) => res.json())
       .then((updatedTask) => {
         const newTasks = [...tasks];
-        newTasks[index].title = updatedTask.title;
+        newTasks[index] = updatedTask;
         setTasks(newTasks);
         setEditingIndex(null);
         setEditText("");
@@ -118,6 +123,8 @@ function App() {
                 handleUpdateTask={handleUpdateTask}
                 handleToggleComplete={handleToggleComplete}
                 handleDeleteTask={handleDeleteTask}
+                editBody={editBody}
+                setEditBody={setEditBody}
               />
             ))}
         </ul>
